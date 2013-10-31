@@ -3,6 +3,10 @@ module Veewee
     module Virtualbox
       module BoxCommand
 
+        def cygpath(s)
+            `/bin/cygpath -w "#{s}"`.chomp
+        end
+
         def add_ide_controller
           #unless => "${vboxcmd} showvminfo \"${vname}\" | grep \"IDE Controller\" "
           command ="#{@vboxcmd} storagectl \"#{name}\" --name \"IDE Controller\" --add ide"
@@ -109,7 +113,7 @@ module Veewee
             ui.info "Attaching disk: #{location}"
   
             #command => "${vboxcmd} storageattach \"${vname}\" --storagectl \"SATA Controller\" --port 0 --device 0 --type hdd --medium \"${vname}.vdi\"",
-            command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"#{storagectl}\" --port #{f-1} --device #{device_number} --type hdd --medium \"#{location}\""
+            command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"#{storagectl}\" --port #{f-1} --device #{device_number} --type hdd --medium \"#{cygpath(location)}\""
             shell_exec("#{command}")
           end
         end
@@ -126,14 +130,14 @@ module Veewee
         def attach_isofile(device_number=0)
           full_iso_file=File.join(env.config.veewee.iso_dir,definition.iso_file)
           ui.info "Mounting cdrom: #{full_iso_file}"
-          command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"IDE Controller\" --type dvddrive --port 0 --device #{device_number} --medium \"#{full_iso_file}\""
+          command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"IDE Controller\" --type dvddrive --port 0 --device #{device_number} --medium \"#{cygpath(full_iso_file)}\""
           shell_exec("#{command}")
         end
 
         def attach_guest_additions
           full_iso_file=File.join(env.config.veewee.iso_dir,"VBoxGuestAdditions_#{self.vboxga_version}.iso")
           ui.info "Mounting guest additions: #{full_iso_file}"
-          command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"IDE Controller\" --type dvddrive --port 1 --device 0 --medium \"#{full_iso_file}\""
+          command ="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"IDE Controller\" --type dvddrive --port 1 --device 0 --medium \"#{cygpath(full_iso_file)}\""
           shell_exec("#{command}")
         end
 
@@ -153,7 +157,7 @@ module Veewee
 
             # Attach floppy to machine (the vfd extension is crucial to detect msdos type floppy)
             floppy_file=File.join(definition.path,"virtualfloppy.vfd")
-            command="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"Floppy Controller\" --port 0 --device 0 --type fdd --medium \"#{floppy_file}\""
+            command="#{@vboxcmd} storageattach \"#{name}\" --storagectl \"Floppy Controller\" --port 0 --device 0 --type fdd --medium \"#{cygpath(floppy_file)}\""
             shell_exec("#{command}")
           end
         end

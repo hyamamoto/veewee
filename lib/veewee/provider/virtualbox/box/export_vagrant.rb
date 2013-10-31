@@ -65,9 +65,9 @@ module Veewee
           end
 
           # Create temp directory
-          current_dir = FileUtils.pwd
+          current_dir = escape(cygpath(FileUtils.pwd))
           ui.info "Creating a temporary directory for export"
-          tmp_dir = Dir.mktmpdir
+          tmp_dir = escape(cygpath(Dir.mktmpdir))
           env.logger.debug("Create temporary directory for export #{tmp_dir}")
 
           begin

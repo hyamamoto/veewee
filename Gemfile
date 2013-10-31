@@ -14,6 +14,7 @@ end
 
 group :windows do
   gem "em-winrm", :git => 'http://github.com/hh/em-winrm.git', :ref => '31745601d3'
+  gem "posix-spawn", :git => "http://github.com/rtomayko/posix-spawn.git"
   gem "log4r"
 end
 
